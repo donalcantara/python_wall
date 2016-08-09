@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>The Wall</title>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+</head>
+<body>
+	<div class="container">
+		<h2>Register</h2>
+		<div class="row">
+			<div class="col-md-8">
+				<form role="form" action="/register" method="POST">
+				  <div class="form-group">
+				    <label>Full Name</label>
+				    <input type="text" class="form-control" name="name">
+				  </div>
+				  <div class="form-group">
+				    <label for="name">Username</label>
+				    <input type="text" class="form-control" name="user">
+				  </div>
+				  <div class="form-group">
+				    <label for="email">Email address:</label>
+				    <input type="email" class="form-control" name="email">
+				  </div>
+				  <div class="form-group">
+				    <label for="pwd">Password:</label>
+				    <input type="password" class="form-control" name="password">
+				  </div>
+				  <div class="form-group">
+				    <label for="pwd">Confirm Password:</label>
+				    <input type="password" class="form-control" name="confirm">
+				  </div>
+				  <button type="submit" class="btn btn-default">Register</button>
+				</form>
+				{% with messages = get_flashed_messages() %}
+		    	{% if messages %}
+		      	{% for message in messages %}
+		        <p style="color:red;">{{message}}</p>
+		      	{% endfor %}
+		    	{% endif %}
+		  		{% endwith %}
+				<h2>Login</h2>
+				<form role="form" action="/login" method="POST">
+				  <div class="form-group">
+				    <label>Email:</label>
+				    <input type="email" class="form-control" name="email">
+				  </div>
+				  <div class="form-group">
+				    <label for="name">Password</label>
+				    <input type="password" class="form-control" name="password">
+				  </div>
+				  <button type="submit" class="btn btn-default">Log In</button>
+				</form>
+			</div>
+		</div>
+	</div>
+	<h1>Database!</h1> 
+	{% for user in users: %}
+		<p>ID: {{ user['id'] }}</p>
+		<p>First Name: {{ user['name'] }}</p>
+		<p>Last Name: {{ user['user'] }}</p>
+		<p>Password: {{ user['password'] }}</p>
+		<p>Email: {{ user['email'] }}</p>
+		<p>Created at: {{ user['created_at'] }}</p>
+		<p>Updated at: {{ user['updated_at'] }}</p>
+		
+		<form role="form" action="/delete/{{ user['id'] }}">
+		<input type="hidden" name="delete">
+		<button type="submit" class="btn btn-default">Delete</button>
+		</form>
+	   <hr>
+	   {% endfor %}
+</body>
+</html>
