@@ -103,6 +103,20 @@ def post(user_id):
 	posts = mysql.query_db(query, data)
 	return redirect('/wall')
 
+@app.route('/comment/<post_id>/<user_id>', methods=["POST"])
+def comment(post_id, user_id):
+	comm = request.form['comment']
+	print comm
+	query = 'INSERT INTO comments (user_id, post_id, content, created_at, updated_at) VALUES (:user_id, :post_id, :comment, NOW(), NOW())'
+	data = {
+		'user_id': user_id,
+		'post_id': post_id,
+		'comment': comm
+		}
+	mysql.query_db(query, data)
+	return redirect('/wall')
+
+
 @app.route('/logout')
 def logout():
 	session['email'] = []
