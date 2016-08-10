@@ -24,14 +24,18 @@
         <button type="submit" class='btn btn-default'>Submit</button>
       </form>
       {% for post in posts %}
+      {% for comment in comments %}
       <h4>{{post['name']}} says:</h4>
       <h5>{{post['content']}}</h5>
+      {% if post['post_id'] == comment['post_id'] %}
+      {{comment['name']}} says {{comment['content']}}
+      {% endif %}
       <form role="form" action="/comment/{{ post['id'] }}/{{ session['id'] }}" method='POST'>
         Leave a Comment!
         <input class="form-control" type="text" name="comment">
         <button type="submit" class='btn btn-default'>Submit</button>
       </form>
-      {% endfor %}
+      {% endfor %}{% endfor %}
     </div>
   </div>
 </body>

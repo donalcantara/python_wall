@@ -88,9 +88,9 @@ def index():
 
 @app.route('/wall')
 def wall():
-	query = ("SELECT posts.content, posts.created_at, users.name, users.id, posts.id AS post_id FROM posts JOIN users ON users.id = posts.user_id")
-	posts = mysql.query_db(query)
-	return render_template('wall.html', posts = posts)
+	posts = mysql.query_db("SELECT posts.content, posts.created_at, users.name, users.id, posts.id AS post_id FROM posts JOIN users ON users.id = posts.user_id")
+	comments = mysql.query_db("SELECT * FROM users JOIN comments on users.id = comments.user_id")
+	return render_template('wall.html', posts = posts, comments=comments)
 
 @app.route('/post/<user_id>', methods=['POST'])
 def post(user_id):
