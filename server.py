@@ -8,18 +8,19 @@ app.secret_key = "ThisIsSecret!"
 
 @app.route('/login', methods=['POST'])
 def login():
-	email = request.form['email']
+	username = request.form['username']
 	password = request.form['password']
-	user = "SELECT * FROM users WHERE users.email = :email LIMIT 1"
-	data = {'email': email}
-	user = mysql.query_db(user, data)
+	query = "SELECT * FROM users WHERE users.username = :username LIMIT 1"
+	data = {'username': username}
+	user = mysql.query_db(query, data)
 	session['id'] = user[0]['id']
+	session['username'] = user[0]['username']
 	if len(user) == 0:
-		flash('There is no account with that email!')
+		flash('There is no account with that username!')
 		return redirect('/')
 	if user[0]:
 		if user[0]['password'] == password:
-			session['email'] = request.form['email']
+			session['username'] = request.form['username']
 			return redirect('/wall')
 		else:
 			flash("Incorrect email and/or password!")
@@ -88,9 +89,9 @@ def index():
 
 @app.route('/wall')
 def wall():
-	posts = mysql.query_db("SELECT posts.content, posts.created_at, users.name, users.id, posts.id AS post_id FROM posts JOIN users ON users.id = posts.user_id")
+	posts = mysql.query_db("SELECT posts.content, posts.created_at, users.name, users.username, users.id, posts.id AS pos_id FROM posts join users ON users.id = posts.user_id")
 	comments = mysql.query_db("SELECT * FROM users JOIN comments on users.id = comments.user_id")
-	return render_template('wall.html', posts = posts, comments=comments)
+	return render_template('wall.html', posts=posts, comments=comments)
 
 @app.route('/post/<user_id>', methods=['POST'])
 def post(user_id):
@@ -120,6 +121,8 @@ def comment(post_id, user_id):
 @app.route('/logout')
 def logout():
 	session['email'] = []
+	session['username'] = []
+	session['password'] = []
 	return redirect('/')
 
 @app.route('/delete/<user_id>')
