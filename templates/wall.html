@@ -12,9 +12,20 @@
 
 </head>
 <body>
- <h1>Welcome {{session ['user']}}!</h1>
-<form action='/logout'>
-  <input type="submit" value="Logout">
-</form>
+  <div class='container'>
+    <div class="row">
+      <h1>Welcome {{session ['user']}}!</h1>
+      <form action='/logout'>
+        <input type="submit" value="Logout">
+      </form>
+      <h3>Post a message, {{session ['id']}}!</h3>
+      <form role="form" action="/post/{{ session['id'] }}" method='POST'>
+        <input class="form-control" name="message"></input>
+        <button type="submit" class='btn btn-default'>Submit</button>
+      </form>
+      {% for post in posts %}
+      {% endfor %}
+    </div>
+  </div>
 </body>
 </html>

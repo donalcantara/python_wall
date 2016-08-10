@@ -6,12 +6,6 @@ mysql = MySQLConnector(app, 'wall')
 
 app.secret_key = "ThisIsSecret!"
 
-@app.route('/')
-def index():
-	query = "SELECT * FROM users"
-	users = mysql.query_db(query)
-	return render_template('index.html', users = users)
-
 @app.route('/login', methods=['POST'])
 def login():
 	email = request.form['email']
@@ -19,13 +13,14 @@ def login():
 	user = "SELECT * FROM users WHERE users.email = :email LIMIT 1"
 	data = {'email': email}
 	user = mysql.query_db(user, data)
+	session['id'] = user[0]['id']
 	if len(user) == 0:
 		flash('There is no account with that email!')
 		return redirect('/')
 	if user[0]:
 		if user[0]['password'] == password:
 			session['email'] = request.form['email']
-			return render_template('success.html')
+			return redirect('/wall')
 		else:
 			flash("Incorrect email and/or password!")
 			return redirect('/')
@@ -33,6 +28,7 @@ def login():
 @app.route('/register', methods=['POST'])
 def submit():
 	email = request.form['email']
+	username = request.form['user']
 	session['name'] = request.form['name']
 	session['user'] = request.form['user']
 	session['email'] = request.form['email']
@@ -64,7 +60,12 @@ def submit():
 	user = mysql.query_db(user, data)
 	if len(user) > 0:
 		flash('That email is already registered!')
-		error += 1
+		return redirect('/')
+	user = "SELECT * FROM users WHERE users.username = :user LIMIT 1"
+	data = {'user': username}
+	user = mysql.query_db(user, data)
+	if len(user) > 0:
+		flash('That username is already taken!')
 		return redirect('/')
 	if error == 0:
 		query = "INSERT INTO users(name, username, email, password, created_at, updated_at) VALUES (:name, :user, :email, :password, NOW(), NOW())"
@@ -74,20 +75,38 @@ def submit():
 			'email': request.form['email'],
 			'password': request.form['password']
 			}
-		mysql.query_db(query, data)
-		return render_template('success.html')
+		user = mysql.query_db(query, data)
+		flash("Great!  Now log in below!")
+		return redirect('/')
+
+@app.route('/')
+def index():
+	query = "SELECT * FROM users"
+	users = mysql.query_db(query)
+	session['id'] = users[0]['id']
+	return render_template('index.html', users = users)
+
+@app.route('/wall')
+def wall():
+	query = ("SELECT posts.content, posts.created_at, users.name, users.id, posts.id AS post_id FROM posts JOIN users ON users.id = posts.user_id")
+	posts = mysql.query_db(query)
+	return render_template('wall.html', posts = posts)
+
+@app.route('/post/<user_id>', methods=['POST'])
+def post(user_id):
+	message = request.form['message']
+	query = 'INSERT INTO posts (user_id, content, created_at, updated_at) VALUES (:id, :post, NOW(), NOW())'
+	data = {
+		'id': user_id,
+		'post': message
+		}
+	posts = mysql.query_db(query, data)
+	return redirect('/wall')
 
 @app.route('/logout')
 def logout():
 	session['email'] = []
 	return redirect('/')
-
-# @app.route('/edit/<friend_id>', methods=['POST'])
-# def show(friend_id): #friend_id is the variable that you're passing
-# 	query = "SELECT * FROM friends WHERE id = :specific_id" #this is the query you're sending to the database
-# 	data = {'specific_id': friend_id} # this is the data you're sending to the datbase
-# 	friends = mysql.query_db(query, data) #combine the query with the data and you'll get back data from the database
-# 	return render_template('edit.html', friends=friends) #this sends you to the edit.html page with friends being the data you requested
 
 @app.route('/delete/<user_id>')
 def delete(user_id):
@@ -107,6 +126,13 @@ def delete(user_id):
 # 		}
 # 	mysql.query_db(query, data)
 # 	return redirect('/')
+
+# @app.route('/edit/<friend_id>', methods=['POST'])
+# def show(friend_id): #friend_id is the variable that you're passing
+# 	query = "SELECT * FROM friends WHERE id = :specific_id" #this is the query you're sending to the database
+# 	data = {'specific_id': friend_id} # this is the data you're sending to the datbase
+# 	friends = mysql.query_db(query, data) #combine the query with the data and you'll get back data from the database
+# 	return render_template('edit.html', friends=friends) #this sends you to the edit.html page with friends being the data you requested
 
 app.run(debug=True)
 
