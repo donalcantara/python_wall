@@ -10,9 +10,11 @@ app.secret_key = "ThisIsSecret!"
 @app.route('/login', methods=['POST'])
 def login():
 	error = 0
-	username = request.form['username']
+	temp = request.form['username']
+	username = temp.lower()
+	print username
 	password = request.form['password']
-	if len(request.form['username']) < 1:
+	if len(username) < 1:
 		flash("Username cannot be empty")
 		error += 1
 	if len(request.form['password']) < 1:
@@ -30,8 +32,7 @@ def login():
 	if user[0]:
 		if user[0]['password'] == password:
 			session['id'] = user[0]['id']
-			session['username'] = user[0]['username']
-			session['username'] = request.form['username']
+			session['username'] = username
 			return redirect('/wall')
 		else:
 			flash("Incorrect username and/or password!")
@@ -39,18 +40,14 @@ def login():
 
 @app.route('/register', methods=['POST'])
 def submit():
-	email = request.form['email']
-	username = request.form['user']
-	session['name'] = request.form['name']
-	session['username'] = request.form['username']
-	session['email'] = request.form['email']
-	session['password'] = request.form['password']
+	temp = request.form['username']
+	username = temp.lower()
 	error = 0
-	if session['name'].isalpha() == True:
+	if request.form['name'].isalpha() == True:
 		flash("Name cannot contain numbers!")
 		error += 1
-	if len(request.form['user']) < 1:
-		flash("User name cannot be blank!")
+	if len(request.form['username']) < 1:
+		flash("Username cannot be blank!")
 		error += 1
 	if len(request.form['name']) < 1:
 		flash("Name cannot be blank!")
@@ -65,7 +62,7 @@ def submit():
 		flash("Confirmed password doesn't match!")
 		error += 1
 	user = "SELECT * FROM users WHERE users.email = :email LIMIT 1"
-	data = {'email': email}
+	data = {'email': request.form['email']}
 	user = mysql.query_db(user, data)
 	if len(user) > 0:
 		flash('That email is already registered!')
@@ -83,7 +80,7 @@ def submit():
 		query = "INSERT INTO users(name, username, email, password, created_at, updated_at) VALUES (:name, :user, :email, :password, NOW(), NOW())"
 		data = {
 			'name': request.form['name'],
-			'user': request.form['user'],
+			'user': username,
 			'email': request.form['email'],
 			'password': request.form['password']
 			}

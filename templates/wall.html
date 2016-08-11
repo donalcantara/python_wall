@@ -15,9 +15,7 @@
   <div class='container'>
     <div class="row">
       <h1>Welcome, {{session['username']}}!</h1>
-      <form action='/logout'>
-        <input type="submit" value="Logout">
-      </form>
+      <a href="/logout">Logout</a>
       <h3>Post a message, {{ session['username']}}!</h3>
       <form role="form" action="/post/{{ session['id'] }}" method='POST'>
         <input class="form-control" placeholder='Post a message here!' name="message"></input>
