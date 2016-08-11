@@ -107,7 +107,6 @@ def wall():
 	print session['username']
 	for post in posts:
 		post['created_at'] = post['created_at'].strftime('%m/%d/%Y %-I:%M:%S %p')
-		print post['username']
 	comments = mysql.query_db("SELECT * FROM users JOIN comments on users.id = comments.user_id")
 	for comment in comments:
 		comment['created_at'] = comment['created_at'].strftime('%m/%d/%Y %-I:%M:%S %p')
@@ -155,6 +154,14 @@ def deletepost(post_id):
 	data = {'id': post_id}
 	mysql.query_db(query, data)
 	return redirect('/wall')
+
+@app.route('/deletecomment/<comment_id>')
+def deletecomment(comment_id):
+	query = 'SET foreign_key_checks = 0; DELETE FROM comments WHERE id = :id; SET foreign_key_checks = 1;'
+	data = {'id': comment_id}
+	mysql.query_db(query, data)
+	return redirect('/wall')
+
 
 # @app.route('/update/<friend_id>', methods=['POST'])
 # def update(friend_id):
