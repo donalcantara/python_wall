@@ -1,5 +1,6 @@
 from flask import Flask, request, redirect, render_template, session, flash
 from mysqlconnection import MySQLConnector
+from time import time
 
 app = Flask(__name__)
 mysql = MySQLConnector(app, 'wall')
@@ -100,7 +101,11 @@ def index():
 @app.route('/wall')
 def wall():
 	posts = mysql.query_db("SELECT posts.content, posts.created_at, users.name, users.username, users.id AS user_id, posts.id AS post_id FROM posts join users ON users.id = posts.user_id")
+	for post in posts:
+		post['created_at'] = post['created_at'].strftime('%m/%d/%Y %-I:%M:%S %p')
 	comments = mysql.query_db("SELECT * FROM users JOIN comments on users.id = comments.user_id")
+	for comment in comments:
+		comment['created_at'] = comment['created_at'].strftime('%m/%d/%Y %-I:%M:%S %p')
 	return render_template('wall.html', posts=posts, comments=comments)
 
 @app.route('/post/<user_id>', methods=['POST'])
