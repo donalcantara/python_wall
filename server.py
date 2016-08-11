@@ -42,7 +42,7 @@ def submit():
 	email = request.form['email']
 	username = request.form['user']
 	session['name'] = request.form['name']
-	session['user'] = request.form['user']
+	session['username'] = request.form['username']
 	session['email'] = request.form['email']
 	session['password'] = request.form['password']
 	error = 0
@@ -93,16 +93,21 @@ def submit():
 
 @app.route('/')
 def index():
+	session['email'] = []
+	session['username'] = []
+	session['password'] = []
+	session['password'] = []
 	query = "SELECT * FROM users"
 	users = mysql.query_db(query)
-	session['id'] = users[0]['id']
 	return render_template('index.html', users = users)
 
 @app.route('/wall')
 def wall():
-	posts = mysql.query_db("SELECT posts.content, posts.created_at, users.name, users.username, users.id AS user_id, posts.id AS post_id FROM posts join users ON users.id = posts.user_id")
+	posts = mysql.query_db("SELECT posts.content, posts.created_at, users.name, users.username, users.id AS user_id, posts.id AS post_id FROM posts join users ON users.id = posts.user_id ORDER BY posts.created_at DESC")
+	print session['username']
 	for post in posts:
 		post['created_at'] = post['created_at'].strftime('%m/%d/%Y %-I:%M:%S %p')
+		print post['username']
 	comments = mysql.query_db("SELECT * FROM users JOIN comments on users.id = comments.user_id")
 	for comment in comments:
 		comment['created_at'] = comment['created_at'].strftime('%m/%d/%Y %-I:%M:%S %p')
@@ -135,9 +140,6 @@ def comment(post_id):
 
 @app.route('/logout')
 def logout():
-	session['email'] = []
-	session['username'] = []
-	session['password'] = []
 	return redirect('/')
 
 @app.route('/delete/<user_id>')
@@ -146,6 +148,13 @@ def delete(user_id):
 	data = {'id': user_id} #this is the data
 	mysql.query_db(query, data) #this is the result from the query with the data from the db
 	return redirect('/') #redirect back to the front page
+
+@app.route('/deletepost/<post_id>')
+def deletepost(post_id):
+	query = 'SET foreign_key_checks = 0; DELETE FROM posts WHERE id = :id; SET foreign_key_checks = 1;'
+	data = {'id': post_id}
+	mysql.query_db(query, data)
+	return redirect('/wall')
 
 # @app.route('/update/<friend_id>', methods=['POST'])
 # def update(friend_id):

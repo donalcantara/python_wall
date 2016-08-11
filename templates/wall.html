@@ -28,6 +28,14 @@
       <br>
       <br>
       <u><h4>At {{ post['created_at'] }}, <b>{{post['name']}}</b> posts: <b>{{post['content']}}</b></h4></u>
+
+      {% if post['username'] == session['username'] %}
+      <form role="form" action="/deletepost/{{ post['post_id'] }}">
+      <input type="hidden" name="delete">
+      <button type="submit" class="btn btn-default">Delete</button>
+      </form>
+      {% endif %}
+    
       {% for comment in comments %}
       {% if post['post_id'] == comment['post_id'] %}
       At {{ comment['created_at'] }}, <b>{{ comment['name'] }}</b> commmented: <b>{{ comment['content'] }}</b>
