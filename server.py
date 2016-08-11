@@ -8,22 +8,32 @@ app.secret_key = "ThisIsSecret!"
 
 @app.route('/login', methods=['POST'])
 def login():
+	error = 0
 	username = request.form['username']
 	password = request.form['password']
+	if len(request.form['username']) < 1:
+		flash("Username cannot be empty")
+		error += 1
+	if len(request.form['password']) < 1:
+		flash("Password cannot be empty")
+		error += 1
 	query = "SELECT * FROM users WHERE users.username = :username LIMIT 1"
 	data = {'username': username}
 	user = mysql.query_db(query, data)
-	session['id'] = user[0]['id']
-	session['username'] = user[0]['username']
+	if error > 0:
+		print error
+		return redirect('/')
 	if len(user) == 0:
 		flash('There is no account with that username!')
 		return redirect('/')
 	if user[0]:
 		if user[0]['password'] == password:
+			session['id'] = user[0]['id']
+			session['username'] = user[0]['username']
 			session['username'] = request.form['username']
 			return redirect('/wall')
 		else:
-			flash("Incorrect email and/or password!")
+			flash("Incorrect username and/or password!")
 			return redirect('/')
 
 @app.route('/register', methods=['POST'])
@@ -53,20 +63,20 @@ def submit():
 	if len(request.form['password']) != len(request.form['confirm']):
 		flash("Confirmed password doesn't match!")
 		error += 1
-	if error > 0:
-		print error
-		return redirect('/')
 	user = "SELECT * FROM users WHERE users.email = :email LIMIT 1"
 	data = {'email': email}
 	user = mysql.query_db(user, data)
 	if len(user) > 0:
 		flash('That email is already registered!')
-		return redirect('/')
+		error += 1
 	user = "SELECT * FROM users WHERE users.username = :user LIMIT 1"
 	data = {'user': username}
 	user = mysql.query_db(user, data)
 	if len(user) > 0:
 		flash('That username is already taken!')
+		error += 1
+	if error > 0:
+		print error
 		return redirect('/')
 	if error == 0:
 		query = "INSERT INTO users(name, username, email, password, created_at, updated_at) VALUES (:name, :user, :email, :password, NOW(), NOW())"
