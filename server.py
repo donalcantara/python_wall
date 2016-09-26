@@ -104,7 +104,7 @@ def wall():
 	print session['username']
 	for post in posts:
 		post['created_at'] = post['created_at'].strftime('%m/%d/%Y %-I:%M:%S %p')
-	comments = mysql.query_db("SELECT * FROM users JOIN comments on users.id = comments.user_id")
+	comments = mysql.query_db("SELECT * FROM users JOIN comments on users.id = comments.user_id ORDER BY comments.created_at ASC")
 	for comment in comments:
 		comment['created_at'] = comment['created_at'].strftime('%m/%d/%Y %-I:%M:%S %p')
 	return render_template('wall.html', posts=posts, comments=comments)
