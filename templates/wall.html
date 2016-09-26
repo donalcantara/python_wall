@@ -33,7 +33,7 @@
       </h4>
       {% for comment in comments %}
       {% if post['post_id'] == comment['post_id'] %}
-      At {{ comment['created_at'] }}, <b>{{ comment['name'] }}</b> commmented: <b>{{ comment['content'] }}</b>
+      At {{ comment['created_at'] }}, <b>{{ comment['name'] }}</b> commented: <b>{{ comment['content'] }}</b>
       {% if comment['username'] == session['username'] %}
       <a href="/deletecomment/{{ comment['id'] }}">delete</a>
       {% endif %}
