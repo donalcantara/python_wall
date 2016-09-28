@@ -21,6 +21,7 @@
   <div class='container'>
     <div class="row">
       <h1>Welcome, {{session['username']}}!</h1>
+      <a href="/account">Account</a><br>
       <a href="/logout">Logout</a>
       <h2>Post a message, {{ session['username']}}!</h2>
       <form role="form" action="/post/{{ session['id'] }}" method='POST'>
@@ -30,10 +31,9 @@
       <hr>
       {% for post in posts %}
       <h3>{{post['name']}}: <u>{{post['content']}}</u></h3> <h6>{{ post['created_at'] }}</h6>
-
       {% if post['username'] == session['username'] %}
       <a href="/deletepost/{{ post['post_id'] }}">delete</a>
-      {% endif %}<br>
+      {% endif %}<br><br>
       {% for comment in comments %}
       {% if post['post_id'] == comment['post_id'] %}
       <h4><b>{{ comment['name'] }}</b></h4>: <h5>{{ comment['content'] }}</h5> <h6>{{ comment['created_at'] }}</h6>
