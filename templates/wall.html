@@ -1,6 +1,7 @@
 <html>
 <head>
   <title>The Wall</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
   <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 
@@ -9,6 +10,11 @@
 
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+<style>
+  h3, h4, h6, h5 {
+  display: inline;
+}
+</style>
 
 </head>
 <body>
@@ -16,24 +22,21 @@
     <div class="row">
       <h1>Welcome, {{session['username']}}!</h1>
       <a href="/logout">Logout</a>
-      <h3>Post a message, {{ session['username']}}!</h3>
+      <h2>Post a message, {{ session['username']}}!</h2>
       <form role="form" action="/post/{{ session['id'] }}" method='POST'>
         <input class="form-control" placeholder='Post a message here!' name="message"></input>
         <button type="submit" class='btn btn-default'>Submit</button>
       </form>
       <hr>
       {% for post in posts %}
-      <br>
-      <br>
-      <u><h4>At {{ post['created_at'] }}, <b>{{post['name']}}</b> posts: <b>{{post['content']}}</b></u>
+      <h3>{{post['name']}}: <u>{{post['content']}}</u></h3> <h6>{{ post['created_at'] }}</h6>
 
       {% if post['username'] == session['username'] %}
       <a href="/deletepost/{{ post['post_id'] }}">delete</a>
-      {% endif %}
-      </h4>
+      {% endif %}<br>
       {% for comment in comments %}
       {% if post['post_id'] == comment['post_id'] %}
-      At {{ comment['created_at'] }}, <b>{{ comment['name'] }}</b> commented: <b>{{ comment['content'] }}</b>
+      <h4><b>{{ comment['name'] }}</b></h4>: <h5>{{ comment['content'] }}</h5> <h6>{{ comment['created_at'] }}</h6>
       {% if comment['username'] == session['username'] %}
       <a href="/deletecomment/{{ comment['id'] }}">delete</a>
       {% endif %}
