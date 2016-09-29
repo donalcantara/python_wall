@@ -158,6 +158,9 @@ def delete(user_id):
 
 @app.route('/deletepost/<post_id>')
 def deletepost(post_id):
+	query = 'SET foreign_key_checks = 0; DELETE FROM comments WHERE post_id = :id; SET foreign_key_checks = 1;'
+	data = {'id': post_id}
+	mysql.query_db(query, data)
 	query = 'SET foreign_key_checks = 0; DELETE FROM posts WHERE id = :id; SET foreign_key_checks = 1;'
 	data = {'id': post_id}
 	mysql.query_db(query, data)
