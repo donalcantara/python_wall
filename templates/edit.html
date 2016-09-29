@@ -15,9 +15,9 @@
   {% for user in users: %}
     <hr>
   <form action="/update/{{ user['id'] }}" method='POST'>
-    <label for="first_name">Name:<input type="text" name="name" id="name" placeholder="{{ user['name'] }}"></label>
-    <label for="last_name">Username:<input type="text" name="username" id="username" placeholder="{{ user['username'] }}"></label>
-    <label for="occupation">Email:<input type="text" name="email" id="email" placeholder="{{ user['email'] }}"></label>
+    <label for="first_name">Name:<input type="text" name="name" id="name" value="{{ user['name'] }}"></label>
+    <label for="last_name">Username:<input type="text" name="username" id="username" value="{{ user['username'] }}"></label>
+    <label for="occupation">Email:<input type="text" name="email" id="email" value="{{ user['email'] }}"></label>
     <input type="submit" value="Update">
   </form>
   {% endfor %}
